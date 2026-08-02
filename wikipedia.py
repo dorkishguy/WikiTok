@@ -24,7 +24,10 @@ def choice():
     day = str(date[2])
     if "articles" not in st.session_state:
         page = requests.get(f"https://api.wikimedia.org/feed/v1/wikipedia/en/featured/{year}/{month}/{day}?format=json", headers=custom_headers)
-        content = page.json()
+        try:
+            content = page.json()
+        except requests.exceptions.JSONDecodeError:
+            st.write("something went wrong")
         tfa = content["tfa"]
         mostread = content["mostread"]["articles"]
         st.session_state.articles = [tfa] + mostread
@@ -48,18 +51,22 @@ def streamlit(image, title, desc, pageid):
                 st.image(str(image))
             st.write(title)
             st.write(desc)
+            y = False
+            n = False
             col1, col2 = st.columns([1,1])
             with col1:
-                y = st.button('yes', key = f"n{pageid}")
+                if st.button('yes', key = f"y{pageid}"):
+                     y = True
+                     update_profile(title, pageid, yn="y")
             with col2:
-                n = st.button('no', key = f"y{pageid}")
+                if st.button('no', key = f"n{pageid}"):
+                     n = True
+                     
             if y:
-                yn = "y"
                 update_profile(title, pageid, "y")
                 st.session_state.idx += 1
                 st.rerun()
             if n:
-                yn = "n"
                 update_profile(title, pageid, "n")
                 st.session_state.idx += 1
                 st.rerun()
@@ -121,13 +128,16 @@ def recc():
             if page.status_code == 404:
                 continue
             page = page.json()
-            print(page)
             title = page["titles"]["normalized"]
             desc = page["extract"]
             pageid = page["pageid"]
-            image = page["thumbnail"]["source"]
+            try:
+                image = page["thumbnail"].get("source")
+            except KeyError:
+                 image = None
             streamlit(image, title, desc, pageid)
             update_shown(title)
+            return
              
 
 
