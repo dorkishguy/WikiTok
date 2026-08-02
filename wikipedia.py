@@ -18,7 +18,7 @@ if not path.is_file():
           file.write(json.dumps(template, indent=4))
 
 def choice():
-    date = str(datetime.datetime.now()).split()[0].split("-")
+    date = str(datetime.datetime.now() - datetime.timedelta(days=1)).split()[0].split("-")
     year = str(date[0])
     month = str(date[1])
     day = str(date[2])
@@ -57,7 +57,6 @@ def streamlit(image, title, desc, pageid):
             with col1:
                 if st.button('yes', key = f"y{pageid}"):
                      y = True
-                     update_profile(title, pageid, yn="y")
             with col2:
                 if st.button('no', key = f"n{pageid}"):
                      n = True
