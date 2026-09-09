@@ -10,6 +10,8 @@ custom_headers = {
 
 main_container = st.empty()
 
+st.header("Future of wikipedia cuz everyone is losing their attention spans :/")
+
 path = Path("profile.json")
 
 if not path.is_file():
