@@ -9,6 +9,7 @@ custom_headers = {
     }
 
 main_container = st.empty()
+bottom_container = st.empty()
 
 path = Path("profile.json")
 
@@ -18,7 +19,7 @@ if not path.is_file():
           file.write(json.dumps(template, indent=4))
 
 def choice():
-    date = str(datetime.datetime.now() - datetime.timedelta(days=2)).split()[0].split("-")
+    date = str(datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)).split()[0].split("-")
     year = str(date[0])
     month = str(date[1])
     day = str(date[2])
@@ -47,19 +48,30 @@ def choice():
 
 def streamlit(image, title, desc, pageid):
     with main_container.container():
+            st.html(
+            """
+            <style>
+                div[data-testid="stBottomBlockContainer"] {
+                    padding-top: 0rem !important;
+                    padding-bottom: 0rem !important;
+                }
+            </style>
+            """
+            )
             if image != None:
-                st.image(str(image))
+                st.image(str(image), width=360)
             st.write(title)
             st.write(desc)
             y = False
             n = False
-            col1, col2 = st.columns([1,1])
-            with col1:
-                if st.button('yes', key = f"y{pageid}"):
-                     y = True
-            with col2:
-                if st.button('no', key = f"n{pageid}"):
-                     n = True
+            with st.bottom:
+                col1, col2 = st.columns([1,1])
+                with col1:
+                    if st.button('like', key = f"y{pageid}"):
+                            y = True
+                with col2:
+                    if st.button('ignore', key = f"n{pageid}"):
+                            n = True
                      
             if y:
                 update_profile(title, pageid, "y")
