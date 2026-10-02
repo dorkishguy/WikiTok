@@ -18,7 +18,7 @@ if not path.is_file():
           file.write(json.dumps(template, indent=4))
 
 def choice():
-    date = str(datetime.datetime.now() - datetime.timedelta(days=1)).split()[0].split("-")
+    date = str(datetime.datetime.now() - datetime.timedelta(days=2)).split()[0].split("-")
     year = str(date[0])
     month = str(date[1])
     day = str(date[2])
